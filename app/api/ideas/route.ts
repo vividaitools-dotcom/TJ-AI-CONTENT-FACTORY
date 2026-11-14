@@ -43,14 +43,14 @@ export async function POST(request: Request) {
     ]
       .filter(Boolean)
       .join('\n');
-    const result = await chatJson<IdeaShape>(user.id, {
+    const { data } = await chatJson<IdeaShape>(user.id, {
       system:
         'You are a senior content strategist. Reply with JSON only: {"ideas":[{"title":"","hook":"","angle":"","format":"","score":0,"notes":""}]}',
       user: prompt,
       temperature: 0.85,
       maxTokens: 2000,
     });
-    const ideas = Array.isArray(result?.ideas) ? result.ideas.slice(0, count) : [];
+    const ideas = Array.isArray(data?.ideas) ? data.ideas.slice(0, count) : [];
     if (!ideas.length) return fail('The model returned no ideas. Try again or switch models.', 502);
     const saved: any[] = [];
     for (const idea of ideas) {
