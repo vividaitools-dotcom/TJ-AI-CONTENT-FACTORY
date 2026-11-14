@@ -8,7 +8,7 @@
     "build": "next build",
     "start": "next start --hostname 0.0.0.0 --port 3000",
     "typecheck": "tsc --noEmit",
-    "selftest": "tsx scripts/selftest.ts"
+    "selftest": "bash scripts/selftest.sh"
   },
   "dependencies": {
     "next": "^16.4.6",
