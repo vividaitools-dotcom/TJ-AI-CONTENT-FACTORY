@@ -6,7 +6,6 @@ export const metadata: Metadata = {
   description: 'Discover. Create. Produce. Publish. An end-to-end AI content studio.',
   applicationName: 'TJ AI CONTENT FACTORY',
   viewport: 'width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover',
-  themColor: '#05060c',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',

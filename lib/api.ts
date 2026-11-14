@@ -24,10 +24,10 @@ export async function readBody<T = any>(request: Request): Promise<T> {
 }
 
 /** Wraps a handler with session auth + uniform error mapping. */
-export async function withUser(
-  handler: (user: SessionUser, request: Request) => Promise<Response>,
-): Promise<(request: Request) => Promise<Response>> {
-  return async (request: Request) => {
+export function withUser(
+  handler: (user: SessionUser, request?: Request) => Promise<Response>,
+): (request?: Request) => Promise<Response> {
+  return async (request?: Request) => {
     try {
       const user = await requireUser();
       return await handler(user, request);
