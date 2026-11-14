@@ -75,6 +75,18 @@ export async function ffprobeDimensions(file: string): Promise<{ width: number; 
   return { width: width || 0, height: height || 0 };
 }
 
+export async function toolVersion(name: string): Promise<string | null> {
+  try {
+    const result = await execCommand(name, ['-version'], { timeoutMs: 8_000 });
+    if (result.code !== 0) return null;
+    const first = (result.stdout || result.stderr).split('\n')[0] || '';
+    const match = first.match(/version\s+([^\s]+)/i);
+    return (match ? match[1] : first.trim().slice(0, 40)) || null;
+  } catch {
+    return null;
+  }
+}
+
 export async function hasBinary(name: string): Promise<boolean> {
   try {
     const result = await execCommand('which', [name], { timeoutMs: 5_000 });

@@ -1,5 +1,5 @@
 import { ok } from '@/lib/api';
-import { hasBinary, ffprobeVersion } from '@/lib/process';
+import { hasBinary, toolVersion } from '@/lib/process';
 import { oauthConfigured } from '@/lib/youtube';
 import { PROVIDERS } from '@/lib/providers';
 
@@ -8,7 +8,7 @@ export async function GET() {
   return ok({
     app: 'TJ AI CONTENT FACTORY',
     status: ffmpegReady && ffprobeReady ? 'ok' : 'degraded',
-    ffmpeg: { ready: ffmpegReady, version: ffmpegReady ? await ffprobeVersion() : null },
+    ffmpeg: { ready: ffmpegReady, version: ffmpegReady ? await toolVersion('ffmpeg') : null },
     ffprobeReady,
     googleOauthConfigured: oauthConfigured(),
     providers: PROVIDERS.map((provider) => ({
