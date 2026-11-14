@@ -517,3 +517,74 @@ export async function synthesizeSpeech(options: {
   const buffer = Buffer.from(await res.arrayBuffer());
   return { buffer, mime: 'audio/mpeg', provider: preferred as ProviderId, model };
 }
+
+/* --------------------------- convenience helpers ------------------------- */
+
+export async function hasProvider(userId: string): Promise<boolean> {
+  const list = await configuredProviders(userId);
+  return list.length > 0;
+}
+
+export async function chatJson<T = any>(
+  userId: string,
+  options: {
+    system: string;
+    user: string;
+    temperature?: number;
+    maxTokens?: number;
+    provider?: ProviderId | 'auto';
+    model?: string;
+  },
+): Promise<{ data: T; provider: ProviderId; model: string }> {
+  const result = await chat({
+    userId,
+    provider: options.provider,
+    model: options.model,
+    system: options.system,
+    messages: [{ role: 'user', content: options.user }],
+    temperature: options.temperature,
+    maxTokens: options.maxTokens,
+    json: true,
+  });
+  return { data: parseJsonLoose<T>(result.text), provider: result.provider, model: result.model };
+}
+
+export type SavedKeyView = {
+  provider: ProviderId;
+  name: string;
+  hint: string;
+  baseUrl: string;
+  defaultModel: string | null;
+  createdAt: number;
+};
+
+export async function listProviderKeys(userId: string): Promise<SavedKeyView[]> {
+  const { all } = await import('./db');
+  const rows = await all<{
+    provider: string;
+    secret: string;
+    base_url: string | null;
+    default_model: string | null;
+    created_at: number;
+  }>('SELECT provider, secret, base_url, default_model, created_at FROM provider_keys WHERE user_id = ?', [
+    userId,
+  ]);
+  return rows.map((row) => {
+    let hint = '••••';
+    try {
+      const value = decryptSecret(row.secret);
+      hint = value.length > 4 ? `••••${value.slice(-4)}` : '••••';
+    } catch {
+      hint = 'unreadable';
+    }
+    const info = providerInfo(row.provider);
+    return {
+      provider: row.provider as ProviderId,
+      name: info?.name || row.provider,
+      hint,
+      baseUrl: row.base_url || info?.baseUrl || '',
+      defaultModel: row.default_model,
+      createdAt: row.created_at,
+    };
+  });
+}

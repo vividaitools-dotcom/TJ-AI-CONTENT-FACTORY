@@ -270,13 +270,14 @@ export function heuristicTrends(items: TrendItem[], limit = 6) {
 export async function topicBrief(userId: string, topic: string): Promise<string> {
   if (!(await hasProvider(userId))) return '';
   try {
-    const text = await chat(userId, {
+    const result = await chat({
+      userId,
       system: 'Summarise the following trend landscape in 4 short bullets for a video creator.',
-      user: topic,
+      messages: [{ role: 'user', content: topic }],
       temperature: 0.4,
       maxTokens: 400,
     });
-    return text.trim();
+    return result.text.trim();
   } catch {
     return '';
   }
