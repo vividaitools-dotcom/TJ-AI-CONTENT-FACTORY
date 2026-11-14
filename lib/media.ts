@@ -139,9 +139,9 @@ export async function deleteAsset(userId: string, assetId: string): Promise<void
   await run('DELETE FROM assets WHERE id = ? AND user_id = ?', [assetId, userId]);
 }
 
-export function assetUrl(asset: { id: string; rel_path: string } | null | undefined): string {
+export function assetUrl(asset: { id: string } | null | undefined): string {
   if (!asset) return '';
-  return `/api/media/${asset.rel_path}`;
+  return `/api/media/${asset.id}`;
 }
 
 export async function fileExists(relPath: string): Promise<boolean> {

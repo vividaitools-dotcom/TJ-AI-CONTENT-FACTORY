@@ -36,7 +36,7 @@ export async function POST(request: Request) {
         await run('UPDATE scenes SET audio_asset_id = ? WHERE id = ? AND user_id = ?', [asset.id, sceneId, user.id]);
       }
       await logActivity(user.id, 'audio', 'uploaded', file.name.slice(0, 120));
-      return ok({ asset, url: `/api/media/${asset.rel_path}` }, 201);
+      return ok({ asset, url: `/api/media/${asset.id}` }, 201);
     }
 
     const body = await readBody<{
@@ -66,7 +66,7 @@ export async function POST(request: Request) {
           meta: { source: 'ambient-generator', seconds },
         });
         await logActivity(user.id, 'audio', 'ambient_created', `${seconds}s bed`);
-        return ok({ asset, url: `/api/media/${asset.rel_path}` }, 201);
+        return ok({ asset, url: `/api/media/${asset.id}` }, 201);
       } finally {
         fs.rmSync(tempPath, { force: true });
       }
@@ -93,6 +93,6 @@ export async function POST(request: Request) {
       await run('UPDATE scenes SET audio_asset_id = ? WHERE id = ? AND user_id = ?', [asset.id, body.sceneId, user.id]);
     }
     await logActivity(user.id, 'audio', 'narration_created', text.slice(0, 80));
-    return ok({ asset, url: `/api/media/${asset.rel_path}` }, 201);
+    return ok({ asset, url: `/api/media/${asset.id}` }, 201);
   })();
 }

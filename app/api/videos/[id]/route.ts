@@ -13,8 +13,8 @@ export async function GET(_request: Request, { params }: Params) {
       video: {
         ...video,
         spec,
-        url: video.status === 'ready' ? `/api/media/${video.rel_path}` : null,
-        thumbnailUrl: spec.thumbnailAssetId ? `/api/media/${user.id}/${id}.jpg` : null,
+        url: video.status === 'ready' && spec.videoAssetId ? `/api/media/${spec.videoAssetId}` : null,
+        thumbnailUrl: spec.thumbnailAssetId ? `/api/media/${spec.thumbnailAssetId}` : null,
       },
     });
   })();

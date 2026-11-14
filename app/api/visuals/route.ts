@@ -83,7 +83,7 @@ export async function POST(request: Request) {
     }
     if (body.projectId) await touchProject(user.id, body.projectId);
     await logActivity(user.id, 'visuals', mode === 'ai' ? 'ai_image' : 'designer_image', title.slice(0, 120));
-    return ok({ asset, url: `/api/media/${asset.rel_path}` }, 201);
+    return ok({ asset, url: `/api/media/${asset.id}` }, 201);
   })();
 }
 
