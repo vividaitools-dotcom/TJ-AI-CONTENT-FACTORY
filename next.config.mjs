@@ -2,9 +2,8 @@
 const nextConfig = {
   output: 'standalone',
   serverExternalPackages: ['sql.js', 'sharp'],
-  eslint: { ignoreDuringBuilds: true },
   experimental: {
-    serverActions: { bodySizeLimit: '32mb' },
+    serverActions: { bodySizeLimit: '48mb' },
   },
 };
 
