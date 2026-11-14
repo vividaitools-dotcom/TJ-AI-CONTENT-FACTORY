@@ -51,30 +51,30 @@ export async function POST(request: Request) {
     ]
       .filter(Boolean)
       .join('\n');
-    const result = await chatJson<ScriptShape>(user.id, {
+    const { data: script } = await chatJson<ScriptShape>(user.id, {
       system:
         'You are an elite short-form video scriptwriter. Reply with JSON only: {"title":"","hook":"","body":"","cta":"","tags":[""],"scenes":[{"text":"narration","visual":"image prompt","seconds":5}]}',
       user: prompt,
       temperature: 0.8,
       maxTokens: 3200,
     });
-    if (!result?.title || !Array.isArray(result.scenes) || !result.scenes.length) {
+    if (!script?.title || !Array.isArray(script.scenes) || !script.scenes.length) {
       return fail('The model did not return a usable script. Try again.', 502);
     }
     const id = uid('scr');
-    const fullBody = [result.hook, result.body].filter(Boolean).join('\n\n').slice(0, 20000);
+    const fullBody = [script.hook, script.body].filter(Boolean).join('\n\n').slice(0, 20000);
     await run(
       `INSERT INTO scripts (id, user_id, project_id, title, hook, body, cta, tags, duration, model, created_at)
        VALUES (?,?,?,?,?,?,?,?,?,?,?)`,
-      [id, user.id, body.projectId || null, String(result.title).slice(0, 200), String(result.hook || '').slice(0, 1200), fullBody, String(result.cta || '').slice(0, 600), JSON.stringify(result.tags || []), seconds, 'ai', now()],
+      [id, user.id, body.projectId || null, String(script.title).slice(0, 200), String(script.hook || '').slice(0, 1200), fullBody, String(script.cta || '').slice(0, 600), JSON.stringify(script.tags || []), seconds, 'ai', now()],
     );
 
     let scenesSaved = 0;
     if (body.projectId && body.saveScenes !== false) {
       await run('DELETE FROM scenes WHERE project_id = ? AND user_id = ?', [body.projectId, user.id]);
       let index = 0;
-      for (const scene of result.scenes.slice(0, 14)) {
-        const duration = Math.min(30, Math.max(2, Number(scene.seconds) || Math.round(seconds / result.scenes.length)));
+      for (const scene of script.scenes.slice(0, 14)) {
+        const duration = Math.min(30, Math.max(2, Number(scene.seconds) || Math.round(seconds / script.scenes.length)));
         await run(
           `INSERT INTO scenes (id, user_id, project_id, idx, text, visual_prompt, image_asset_id, audio_asset_id, duration, motion, transition, created_at)
            VALUES (?,?,?,?,?,?,?,?,?,?,?,?)`,
@@ -83,9 +83,9 @@ export async function POST(request: Request) {
         index += 1;
       }
       scenesSaved = index;
-      await touchProject(user.id, body.projectId);
+      await touchProject(body.projectId);
     }
-    await logActivity(user.id, 'scripts', 'generated', `${result.title} · ${scenesSaved} scenes`);
-    return ok({ script: { id, ...result, body: fullBody }, scenesSaved });
+    await logActivity(user.id, 'scripts', 'generated', `${script.title} · ${scenesSaved} scenes`);
+    return ok({ script: { id, ...script, body: fullBody }, scenesSaved });
   })();
 }

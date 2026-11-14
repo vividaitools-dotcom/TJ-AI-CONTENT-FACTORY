@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fail, ok, readBody, withUser } from '@/lib/api';
-import { all, get, logActivity, mediaDirPath, now, run, TMP_DIR, uid } from '@/lib/db';
+import { all, get, logActivity, now, run, TMP_DIR, uid } from '@/lib/db';
 import { dimsFor, renderPoster } from '@/lib/design';
 import { enqueueRender, runProduction, type ProductionJob } from '@/lib/jobs';
 import { getAsset, mediaAbsPath } from '@/lib/media';

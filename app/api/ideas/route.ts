@@ -62,7 +62,7 @@ export async function POST(request: Request) {
       );
       saved.push({ id, ...idea });
     }
-    if (body.projectId) await touchProject(user.id, body.projectId);
+    if (body.projectId) await touchProject(body.projectId);
     await logActivity(user.id, 'ideas', 'generated', `${ideas.length} ideas · ${topic}`);
     return ok({ ideas: saved });
   })();

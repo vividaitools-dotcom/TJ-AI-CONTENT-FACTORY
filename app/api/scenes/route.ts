@@ -45,7 +45,7 @@ export async function POST(request: Request) {
         now(),
       ],
     );
-    await touchProject(user.id, body.projectId);
+    await touchProject(body.projectId);
     const scene = await import('@/lib/db').then((m) => m.get('SELECT * FROM scenes WHERE id = ?', [id]));
     return ok({ scene }, 201);
   })();
@@ -77,7 +77,7 @@ export async function PATCH(request: Request) {
     if (!fields.length) return fail('Nothing to update.');
     values.push(body.sceneId, user.id);
     await run(`UPDATE scenes SET ${fields.join(', ')} WHERE id = ? AND user_id = ?`, values);
-    await touchProject(user.id, scene.project_id);
+    await touchProject(scene.project_id);
     const updated = await import('@/lib/db').then((m) => m.get('SELECT * FROM scenes WHERE id = ?', [body.sceneId]));
     return ok({ scene: updated });
   })();

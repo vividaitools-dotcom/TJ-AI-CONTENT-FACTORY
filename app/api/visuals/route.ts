@@ -81,7 +81,7 @@ export async function POST(request: Request) {
     if (body.sceneId) {
       await run('UPDATE scenes SET image_asset_id = ? WHERE id = ? AND user_id = ?', [asset.id, body.sceneId, user.id]);
     }
-    if (body.projectId) await touchProject(user.id, body.projectId);
+    if (body.projectId) await touchProject(body.projectId);
     await logActivity(user.id, 'visuals', mode === 'ai' ? 'ai_image' : 'designer_image', title.slice(0, 120));
     return ok({ asset, url: `/api/media/${asset.id}` }, 201);
   })();
